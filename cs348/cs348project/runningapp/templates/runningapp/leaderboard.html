@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Leaderboard</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        a {
+            color: #0066cc;
+            text-decoration: none;
+        }
+        a:hover {
+            text-decoration: underline;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .form-container {
+            margin-bottom: 20px;
+        }
+        .error-message {
+            color: red;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid red;
+            background-color: #ffe6e6;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Leaderboard</h1>
+    
+    {% if error_message %}
+        <div class="error-message">
+            {{ error_message }}
+        </div>
+    {% endif %}
+    
+    <form method="get" action="{% url 'leaderboard' %}" class="form-container">
+        <!-- Date Range -->
+        <label for="start_date">Start Date:</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date|date:'Y-m-d' }}" required>
+        <label for="end_date">End Date:</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date|date:'Y-m-d' }}" required>
+    
+        <!-- Dropdown Menu -->
+        <label for="filter_by">Filter By:</label>
+        <select id="filter_by" name="filter_by">
+            <option value="distance" {% if filter_by == "distance" %}selected{% endif %}>Total Distance</option>
+            <option value="time" {% if filter_by == "time" %}selected{% endif %}>Total Time</option>
+            <option value="activities" {% if filter_by == "activities" %}selected{% endif %}>Number of Activities</option>
+        </select>
+    
+        <!-- Submit Button -->
+        <button type="submit">Save Changes</button>
+    </form>
+
+    <!-- Leaderboard Table -->
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Username</th>
+                <th>
+                    {% if filter_by == "distance" %}
+                        Total Distance (miles)
+                    {% elif filter_by == "time" %}
+                        Total Time (minutes)
+                    {% elif filter_by == "activities" %}
+                        Number of Activities
+                    {% endif %}
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for rank, username, value in leaderboard %}
+                <tr>
+                    <td>{{ rank }}</td>
+                    <td>{{ username }}</td>
+                    <td>
+                        {% if filter_by == "distance" %}
+                            {{ value|floatformat:2 }}
+                        {% elif filter_by == "time" %}
+                            {{ value|floatformat:0 }}
+                        {% else %}
+                            {{ value }}
+                        {% endif %}
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="3" style="text-align: center;">No activities recorded in this timeframe.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{% url 'home' %}">Back to Home</a>
+</body>
+</html>

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Bike Ride</title>
+    <style>
+        .navigation {
+            margin-top: 20px;
+        }
+        .navigation a {
+            margin-right: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Edit Bike Ride</h1>
+    <p>Make changes to this bike ride:</p>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Save Changes</button>
+    </form>
+    <div class="navigation">
+        <a href="{% url 'home' %}">Back to Home</a>
+        <a href="{% url 'leaderboard' %}">Back to Leaderboard</a>
+    </div>
+</body>
+</html>

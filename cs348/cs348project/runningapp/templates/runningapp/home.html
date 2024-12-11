@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Your Activities</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; margin: 0; padding: 20px; }
+        h1, h2 { color: #333; }
+        a { color: #0066cc; text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        .logout-form { text-align: right; margin-bottom: 20px; }
+        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        th { background-color: #f2f2f2; }
+        .add-link { display: inline-block; margin-bottom: 10px; }
+        .top-links { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .leaderboard-link { font-size: 1.2em; color: #0066cc; text-decoration: none; }
+        .leaderboard-link:hover { text-decoration: underline; }
+        .reset-button {
+            display: inline-block;
+            padding: 8px 16px;
+            margin-left: 10px;
+            background-color: #f44336;
+            color: white;
+            text-decoration: none;
+            border-radius: 4px;
+        }
+        .reset-button:hover {
+            background-color: #d32f2f;
+        }
+        .welcome-message {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .welcome-message h2 {
+            color: #333;
+            font-size: 1.5em;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="top-links">
+        <a href="{% url 'leaderboard' %}" class="leaderboard-link">View Leaderboard</a>
+        <form method="post" action="{% url 'logout' %}" class="logout-form">
+            {% csrf_token %}
+            <button type="submit">Logout</button>
+        </form>
+
+    </div>
+    
+    <div class="welcome-message">
+        <h2>Welcome, {{ user.first_name }} {{ user.last_name }}!</h2>
+    </div>
+    <h1>Your Activities</h1>
+
+    <!-- Add Run Button -->
+    <div>
+        <a href="{% url 'add_run' %}" class="add-link">Add Run</a>
+    </div>
+
+    <!-- Runs -->
+    <h2>Runs</h2>
+    <form method="get" action="">
+        <label for="run_distance">Distance (miles):</label>
+        <input type="number" name="run_distance" step="0.1" id="run_distance" value="{{ run_distance }}">
+        
+        <label for="run_start_date">Start Date:</label>
+        <input type="date" name="run_start_date" id="run_start_date" value="{{ run_start_date }}">
+    
+        <label for="run_end_date">End Date:</label>
+        <input type="date" name="run_end_date" id="run_end_date" value="{{ run_end_date }}">
+    
+        <label for="run_time">Time (minutes):</label>
+        <input type="number" name="run_time" step="0.1" id="run_time" value="{{ run_time }}">
+    
+        <button type="submit">Filter</button>
+        <a href="{% url 'home' %}" class="reset-button">Reset Filter</a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Distance (miles)</th>
+                <th>Time (minutes)</th>
+                <th>Pace (min/mile)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for run in runs %}
+                <tr>
+                    <td>{{ run.date }}</td>
+                    <td>{{ run.distance_miles }}</td>
+                    <td>{{ run.time_minutes }}</td>
+                    <td>{{ run.pace|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'edit_run' run.id %}">Edit</a> |
+                        <a href="{% url 'delete_run' run.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No runs found.</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Repeat similar filter forms and tables for Bike Rides and Swims -->
+    <!-- Bike Rides -->
+    <div>
+        <a href="{% url 'add_bike' %}" class="add-link">Add Bike Ride</a>
+    </div>
+    <h2>Bike Rides</h2>
+    <form method="get" action="">
+        <label for="bike_distance">Distance (miles):</label>
+        <input type="number" name="bike_distance" step="0.1" id="bike_distance" value="{{ bike_distance }}">
+        
+        <label for="bike_start_date">Start Date:</label>
+        <input type="date" name="bike_start_date" id="bike_start_date" value="{{ bike_start_date }}">
+    
+        <label for="bike_end_date">End Date:</label>
+        <input type="date" name="bike_end_date" id="bike_end_date" value="{{ bike_end_date }}">
+    
+        <label for="bike_time">Time (minutes):</label>
+        <input type="number" name="bike_time" step="0.1" id="bike_time" value="{{ bike_time }}">
+    
+        <button type="submit">Filter</button>
+        <a href="{% url 'home' %}" class="reset-button">Reset Filter</a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Distance (miles)</th>
+                <th>Time (minutes)</th>
+                <th>Pace (min/mile)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for bike in bike_rides %}
+                <tr>
+                    <td>{{ bike.date }}</td>
+                    <td>{{ bike.distance_miles|floatformat:2 }}</td>
+                    <td>{{ bike.time_minutes|floatformat:2 }}</td>
+                    <td>{{ bike.pace|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'edit_bike' bike.id %}">Edit</a> |
+                        <a href="{% url 'delete_bike' bike.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No bike rides yet. <a href="{% url 'add_bike' %}">Add one</a>!</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- Swims -->
+    <div>
+        <a href="{% url 'add_swim' %}" class="add-link">Add Swim</a>
+    </div>
+    <h2>Swims</h2>
+    <form method="get" action="">
+        <label for="swim_distance">Distance (miles):</label>
+        <input type="number" name="swim_distance" step="0.1" id="swim_distance" value="{{ swim_distance }}">
+        
+        <label for="swim_start_date">Start Date:</label>
+        <input type="date" name="swim_start_date" id="swim_start_date" value="{{ swim_start_date }}">
+    
+        <label for="swim_end_date">End Date:</label>
+        <input type="date" name="swim_end_date" id="swim_end_date" value="{{ swim_end_date }}">
+    
+        <label for="run_time">Time (minutes):</label>
+        <input type="number" name="swim_time" step="0.1" id="swim_time" value="{{ swim_time }}">
+    
+        <button type="submit">Filter</button>
+        <a href="{% url 'home' %}" class="reset-button">Reset Filter</a>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Distance (meters)</th>
+                <th>Time (minutes)</th>
+                <th>Pace (min/100m)</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for swim in swims %}
+                <tr>
+                    <td>{{ swim.date }}</td>
+                    <td>{{ swim.distance_meters|floatformat:2 }}</td>
+                    <td>{{ swim.time_minutes|floatformat:2 }}</td>
+                    <td>{{ swim.pace|floatformat:2 }}</td>
+                    <td>
+                        <a href="{% url 'edit_swim' swim.id %}">Edit</a> |
+                        <a href="{% url 'delete_swim' swim.id %}">Delete</a>
+                    </td>
+                </tr>
+            {% empty %}
+                <tr>
+                    <td colspan="5">No swims yet. <a href="{% url 'add_swim' %}">Add one</a>!</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div class="progress-button-container" style="margin-top: 20px; text-align: center;">
+        <a href="{% url 'add_progress' %}" class="progress-button" style="padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 4px;">Add Progress Update</a>
+    </div>
+</body>
+</html>
